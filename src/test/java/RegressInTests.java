@@ -1,71 +1,66 @@
 import io.restassured.RestAssured;
-import models.CreateWorkerRequest;
-import models.CreateWorkerResponse;
+import models.CreateWorker;
 import models.SuccessLoginRequest;
 import models.SuccessLoginResponse;
 import models.UserData;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static specs.CreateWorkerSpec.createWorkerRequestSpecification;
-import static specs.CreateWorkerSpec.createWorkerResponseSpecification;
-import static specs.LoginSpec.loginRequestSpecification;
-import static specs.LoginSpec.loginResponseSpecification;
-import static specs.UserIdSpec.userIdRequestSpecification;
-import static specs.UserIdSpec.userIdResponseSpecification;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static specs.RegressInSpec.requestRegressInSpecification;
+import static specs.RegressInSpec.responseRegressInSpecificationStatusCode200;
+import static specs.RegressInSpec.responseRegressInSpecificationStatusCode201;
+import static specs.RegressInSpec.responseRegressInSpecificationStatusCode204;
+import static specs.RegressInSpec.responseRegressInSpecificationStatusCode404;
 
 public class RegressInTests {
 
     @BeforeAll
     static void setUp() {
         RestAssured.baseURI = "https://reqres.in";
+        RestAssured.basePath = "/api";
     }
 
     @Test
     void checkUserIdTest() {
-        UserData response = step("Check user id", () -> given(userIdRequestSpecification)
+        UserData response = step("Check user id", () -> given(requestRegressInSpecification)
                 .when()
-                .get("/api/users/{id}", 2)
+                .get("/users/{id}", 2)
                 .then()
-                .spec(userIdResponseSpecification)
-                .assertThat()
-                .statusCode(200)
+                .spec(responseRegressInSpecificationStatusCode200)
                 .extract().as(UserData.class)
         );
-        step("Check user id", () -> Assertions.assertEquals(2, response.data.id));
+        step("Check user id", () -> assertEquals(2, response.getData().getId()));
     }
 
     @Test
     void whenSingleUserIdNotInListIdTest() {
-        step("Check status code 404", () -> given(userIdRequestSpecification)
+        step("Check status code 404", () -> given(requestRegressInSpecification)
                 .when()
-                .get("/api/unknown/{id}", 23)
+                .get("/unknown/{id}", 23)
                 .then()
-                .spec(userIdResponseSpecification)
-                .assertThat()
-                .statusCode(404)
+                .spec(responseRegressInSpecificationStatusCode404)
         );
     }
 
     @Test
     void checkWhatNameFromBodyEqualsNameFromResponseTest() {
-        CreateWorkerRequest requestBody = new CreateWorkerRequest();
+        CreateWorker requestBody = new CreateWorker();
         step("Filling request body object", () -> {
             requestBody.setName("morpheus");
             requestBody.setJob("leader");
         });
-        CreateWorkerResponse response = step("Send request", () -> given(createWorkerRequestSpecification)
+        CreateWorker response = step("Send request", () -> given(requestRegressInSpecification)
                 .body(requestBody)
                 .when()
-                .post()
+                .post("/users")
                 .then()
-                .spec(createWorkerResponseSpecification)
-                .extract().as(CreateWorkerResponse.class)
+                .spec(responseRegressInSpecificationStatusCode201)
+                .extract().as(CreateWorker.class)
         );
-        step("Check name", () -> Assertions.assertEquals("morpheus", response.getName()));
+        step("Check name", () -> assertEquals("morpheus", response.getName()));
     }
 
     @Test
@@ -75,24 +70,24 @@ public class RegressInTests {
             requestBody.setEmail("eve.holt@reqres.in");
             requestBody.setPassword("cityslicka");
         });
-        SuccessLoginResponse response = step("Send request", () -> given(loginRequestSpecification)
+        SuccessLoginResponse response = step("Send request", () -> given(requestRegressInSpecification)
                 .body(requestBody)
                 .when()
-                .post()
+                .post("/login")
                 .then()
-                .spec(loginResponseSpecification)
+                .spec(responseRegressInSpecificationStatusCode200)
                 .extract().as(SuccessLoginResponse.class)
         );
-        step("Check token", () -> Assertions.assertEquals("QpwL5tke4Pnpja7X4", response.getToken()));
+        step("Check token", () -> assertEquals("QpwL5tke4Pnpja7X4", response.getToken()));
     }
 
     @Test
     void successDeleteTest() {
-        step("Delete user with id 2", () -> given(userIdRequestSpecification)
+        step("Delete user with id 2", () -> given(requestRegressInSpecification)
                 .when()
-                .delete("api/users/{id}", 2)
+                .delete("/users/{id}", 2)
                 .then()
-                .spec(userIdResponseSpecification)
-                .statusCode(204));
+                .spec(responseRegressInSpecificationStatusCode204)
+        );
     }
 }

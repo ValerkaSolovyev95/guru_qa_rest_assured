@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,10 +8,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserInfo {
-    public int id;
-    public String email;
-    public String first_name;
-    public String last_name;
-    public String avatar;
+    private int id;
+    private String email;
+    private String first_name;
+    private String last_name;
+    private String avatar;
 }
