@@ -1,27 +1,21 @@
-import io.restassured.RestAssured;
+package tests;
+
 import models.CreateWorker;
-import models.SuccessLoginRequest;
-import models.SuccessLoginResponse;
 import models.UserData;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static specs.RegressInSpec.requestRegressInSpecification;
 import static specs.RegressInSpec.responseRegressInSpecificationStatusCode200;
 import static specs.RegressInSpec.responseRegressInSpecificationStatusCode201;
 import static specs.RegressInSpec.responseRegressInSpecificationStatusCode204;
 import static specs.RegressInSpec.responseRegressInSpecificationStatusCode404;
 
-public class RegressInTests {
-
-    @BeforeAll
-    static void setUp() {
-        RestAssured.baseURI = "https://reqres.in";
-        RestAssured.basePath = "/api";
-    }
+@Tag("user_api_test")
+public class UserApiTests extends BaseTest{
 
     @Test
     void checkUserIdTest() {
@@ -32,7 +26,7 @@ public class RegressInTests {
                 .spec(responseRegressInSpecificationStatusCode200)
                 .extract().as(UserData.class)
         );
-        step("Check user id", () -> assertEquals(2, response.getData().getId()));
+        step("Check user id", () -> assertThat(response.getData().getId()).isEqualTo(2));
     }
 
     @Test
@@ -60,25 +54,7 @@ public class RegressInTests {
                 .spec(responseRegressInSpecificationStatusCode201)
                 .extract().as(CreateWorker.class)
         );
-        step("Check name", () -> assertEquals("morpheus", response.getName()));
-    }
-
-    @Test
-    void successLoginTest() {
-        SuccessLoginRequest requestBody = new SuccessLoginRequest();
-        step("Filling request body object", () -> {
-            requestBody.setEmail("eve.holt@reqres.in");
-            requestBody.setPassword("cityslicka");
-        });
-        SuccessLoginResponse response = step("Send request", () -> given(requestRegressInSpecification)
-                .body(requestBody)
-                .when()
-                .post("/login")
-                .then()
-                .spec(responseRegressInSpecificationStatusCode200)
-                .extract().as(SuccessLoginResponse.class)
-        );
-        step("Check token", () -> assertEquals("QpwL5tke4Pnpja7X4", response.getToken()));
+        step("Check name", () -> assertThat(response.getName()).isEqualTo("morpheus"));
     }
 
     @Test

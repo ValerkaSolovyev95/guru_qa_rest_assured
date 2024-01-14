@@ -69,7 +69,8 @@ gradle clean test
 
 ***Удалённый запуск через Jenkins:***
 ```bash  
-clean "-Denv=${ENV}" test 
+clean ${TASK} 
+"-Denv=${ENV}"  
 ```
 ___
 
