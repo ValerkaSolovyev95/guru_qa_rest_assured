@@ -81,7 +81,7 @@ ___
 
 ___
 <a id="allure"></a>
-## <img alt="Allure" height="25" src="images/logo/Allure.svg" width="25"/></a> <a name="Allure"></a>Allure [отчет](https://jenkins.autotests.cloud/job/guru_qa_rest_assured_stream22_vasolovev/7/allure/)</a>
+## <img alt="Allure" height="25" src="images/logo/Allure.svg" width="25"/></a> <a name="Allure"></a>Allure [отчет](https://jenkins.autotests.cloud/job/guru_qa_rest_assured_stream22_vasolovev/allure/)</a>
 ___
 
 ### *Основная страница отчёта*
